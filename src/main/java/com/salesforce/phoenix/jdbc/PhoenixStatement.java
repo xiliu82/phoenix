@@ -887,7 +887,8 @@ public class PhoenixStatement implements Statement, SQLCloseable, com.salesforce
 
     @Override
     public void clearBatch() throws SQLException {
-        throw new SQLFeatureNotSupportedException();
+        // this exception has a bad interaction with c3p0, simply ignore.
+        //throw new SQLFeatureNotSupportedException();
     }
 
     @Override
