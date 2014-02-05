@@ -72,6 +72,7 @@ import com.salesforce.phoenix.expression.function.UpperFunction;
  * @since 0.1
  */
 public enum ExpressionType {
+    AppoxUniqFunction(AppoxUniqFunction.class),
     ReverseFunction(ReverseFunction.class),
     RowKey(RowKeyColumnExpression.class),
     KeyValue(KeyValueColumnExpression.class),
