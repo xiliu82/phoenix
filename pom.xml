@@ -417,8 +417,8 @@
 
     <dependency>
       <groupId>com.twitter</groupId>
-      <artifactId>algebird-core_2.9.3</artifactId>
-      <version>0.2.0</version>
+      <artifactId>algebird-core_2.10</artifactId>
+      <version>0.3.1</version>
     </dependency>
 
   </dependencies>
