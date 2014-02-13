@@ -11,21 +11,20 @@ import com.salesforce.phoenix.schema.PDataType;
 import com.salesforce.phoenix.schema.tuple.Tuple;
 import com.twitter.algebird.HLL;
 import com.twitter.algebird.HyperLogLog;
-import com.twitter.algebird.HyperLogLogMonoid;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 
 /**
  * @author Xi Liu
  */
-@BuiltInFunction(name=AppoxUniqFunction.NAME,  args={ @Argument(allowedTypes={PDataType.VARBINARY})} )
-public class AppoxUniqFunction extends SingleAggregateFunction {
+@BuiltInFunction(name= ApproxUniqFunction.NAME,  args={ @Argument(allowedTypes={PDataType.VARBINARY})} )
+public class ApproxUniqFunction extends SingleAggregateFunction {
   static final String NAME = "APPROX_UNIQ";
 
-  public AppoxUniqFunction() {
+  public ApproxUniqFunction() {
 
   }
 
-  public AppoxUniqFunction(List<Expression> childern) {
+  public ApproxUniqFunction(List<Expression> childern) {
     super(childern);
   }
 
@@ -33,14 +32,25 @@ public class AppoxUniqFunction extends SingleAggregateFunction {
   public Aggregator newServerAggregator() {
     return new BaseAggregator(null) {
 
-      private HLL aggHLL = (new HyperLogLogMonoid(12)).zero();
+      private HLL aggHLL = null;
 
       @Override
       public void aggregate(Tuple tuple, ImmutableBytesWritable ptr) {
         byte[] buffer = new byte[ptr.getLength()];
         System.arraycopy(ptr.get(), ptr.getOffset(), buffer, 0, ptr.getLength());
         HLL thisHll = HyperLogLog.fromBytes(buffer);
-        aggHLL = thisHll.$plus(aggHLL);
+        if (aggHLL == null) {
+          aggHLL = thisHll;
+        } else {
+          int aggBits = aggHLL.bits();
+          int thisBits = thisHll.bits();
+          if (thisBits == aggBits) {
+            aggHLL = thisHll.$plus(aggHLL);
+          } else if (thisBits > aggBits) {
+            aggHLL = thisHll;
+          }
+        }
+
       }
 
       @Override
