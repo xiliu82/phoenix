@@ -11,6 +11,7 @@ import com.salesforce.phoenix.schema.PDataType;
 import com.salesforce.phoenix.schema.tuple.Tuple;
 import com.twitter.algebird.HLL;
 import com.twitter.algebird.HyperLogLog;
+import com.twitter.algebird.HyperLogLogMonoid;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 
 /**
@@ -32,7 +33,7 @@ public class ApproxUniqFunction extends SingleAggregateFunction {
   public Aggregator newServerAggregator() {
     return new BaseAggregator(null) {
 
-      private HLL aggHLL = null;
+      private HLL aggHLL = (new HyperLogLogMonoid(12)).zero();
 
       @Override
       public void aggregate(Tuple tuple, ImmutableBytesWritable ptr) {
